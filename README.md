@@ -9,14 +9,7 @@ Deep Learning models are often "Black Boxes"; we see what they predict, but we d
  A Visualizer (to create the heatmap UI).
  A Scorer (to calculate if the model is cheating or is bias).
 
-## 📂 Project Structure
-```text
-XAI-Vision/
-├── app.py                # Main UI & Dashboard
-├── modules/              # Logic Modules
-│   ├── masker.py         # Image Ablation
-│   ├── scorer.py         # Bias Quantification
-│   └── visualizer.py     # Heatmap Generation
-├── models/               # AI Engine
-│   └── zoo.py            # Model Loading (ResNet, ViT, etc.)
-└── requirements.txt      # Dependencies
+ <img width="3028" height="1574" alt="image" src="https://github.com/user-attachments/assets/9c9880eb-7d5e-467f-bf6d-a60e8eea5b30" />
+ 
+Models may associate context (snow, grass, water) with labels instead of learning the object itself.
+**XAI-Vision** detects this by quantifying confidence collapse under controlled masking — revealing whether predictions depend on semantic features or shortcuts.
