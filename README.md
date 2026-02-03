@@ -2,12 +2,6 @@
 Deep Learning models are often "Black Boxes"; we see what they predict, but we don't know *why*. **XAI-Vision** is a diagnostic suite designed to "show" the internal logic of AI.
 
  [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
- 
-## XAI-Vision Suite is:
- An Image Processor (to mask/corrupt images).
- An AI Interrogator (to check different models like ResNet or ViT).
- A Visualizer (to create the heatmap UI).
- A Scorer (to calculate if the model is cheating or is bias).
 
  <img width="3028" height="1574" alt="image" src="https://github.com/user-attachments/assets/9c9880eb-7d5e-467f-bf6d-a60e8eea5b30" />
  
