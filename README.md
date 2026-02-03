@@ -3,7 +3,7 @@ Deep Learning models are often "Black Boxes"; we see what they predict, but we d
 
  [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 
- <img width="3028" height="1574" alt="image" src="https://github.com/user-attachments/assets/9c9880eb-7d5e-467f-bf6d-a60e8eea5b30" />
+<img width="1024" height="565" alt="image" src="https://github.com/user-attachments/assets/12710ba0-5d79-48a9-b630-e2593bb8c55b" />
  
 Models may associate context (snow, grass, water) with labels instead of learning the object itself.
 **XAI-Vision** detects this by quantifying confidence collapse under controlled masking, revealing whether predictions depend on semantic features or shortcuts.
