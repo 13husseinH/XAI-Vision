@@ -2,8 +2,6 @@
 Deep Learning models are often "Black Boxes"; we see what they predict, but we don't know *why*. **XAI-Vision** is a diagnostic suite designed to "show" the internal logic of AI.
 
  [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
-
-<img width="1024" height="565" alt="image" src="https://github.com/user-attachments/assets/12710ba0-5d79-48a9-b630-e2593bb8c55b" />
  
 XAI-Vision works by **systematically masking regions of an image** and measuring how the model’s prediction confidence changes.  
 If hiding a region causes a large confidence drop, that region is likely **important for the model's decision**.
@@ -18,6 +16,10 @@ If hiding a region causes a large confidence drop, that region is likely **impor
 4. Run inference on each masked image.
 5. Measure the confidence drop compared to the original prediction.
 6. Rank regions by importance.
+
+
+<img width="1064" height="387" alt="ex image" src="https://github.com/user-attachments/assets/3f16851f-6bac-483b-8a90-e886aef70482" />
+
 
 
 
