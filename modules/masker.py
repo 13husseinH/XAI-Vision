@@ -58,7 +58,10 @@ class ImageMasker:
                 masked = image.clone()
                 masked[:, y1:y2, x1:x2] = self.fill_region(image, y1, y2, x1, x2)
 
-                results.append(masked)
+                results.append({
+                    "image": masked,
+                    "bbox": (y1, y2, x1, x2),
+                })
 
         return results
 
@@ -85,7 +88,10 @@ class ImageMasker:
         for (y1, y2, x1, x2) in corners:
             masked = image.clone()
             masked[:, y1:y2, x1:x2] = self.fill_region(image, y1, y2, x1, x2)
-            results.append(masked)
+            results.append({
+                "image": masked,
+                "bbox": (y1, y2, x1, x2),
+            })
 
         return results
 
@@ -112,7 +118,10 @@ class ImageMasker:
         for (y1, y2, x1, x2) in borders:
             masked = image.clone()
             masked[:, y1:y2, x1:x2] = self.fill_region(image, y1, y2, x1, x2)
-            results.append(masked)
+            results.append({
+                "image": masked,
+                "bbox": (y1, y2, x1, x2),
+            })
 
         return results
 
@@ -135,7 +144,10 @@ class ImageMasker:
         masked = image.clone()
         masked[:, y1:y2, x1:x2] = self.fill_region(image, y1, y2, x1, x2)
 
-        return [masked]
+        return [{
+            "image": masked,
+            "bbox": (y1, y2, x1, x2),
+        }]
 
 
     # =========================
