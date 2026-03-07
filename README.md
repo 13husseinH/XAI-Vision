@@ -29,3 +29,7 @@ In this example:
 - **Original confidence:** 0.8285
 - **Most important region:** `(y:0–74, x:74–148)`
 - **Importance score:** `0.5193`
+
+## Mask Types
+
+<img width="1536" height="1024" alt="ex imagee" src="https://github.com/user-attachments/assets/58945392-adc9-4b9b-b9ce-5cac5ad1ed93" />
