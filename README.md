@@ -5,5 +5,25 @@ Deep Learning models are often "Black Boxes"; we see what they predict, but we d
 
 <img width="1024" height="565" alt="image" src="https://github.com/user-attachments/assets/12710ba0-5d79-48a9-b630-e2593bb8c55b" />
  
-Models may associate context (snow, grass, water) with labels instead of learning the object itself.
-**XAI-Vision** detects this by quantifying confidence collapse under controlled masking, revealing whether predictions depend on semantic features or shortcuts.
+XAI-Vision works by **systematically masking regions of an image** and measuring how the model’s prediction confidence changes.  
+If hiding a region causes a large confidence drop, that region is likely **important for the model's decision**.
+
+---
+
+## How It Works
+
+1. Load a pretrained vision model (e.g., `resnet18`, `mobilenet_v3_small`).
+2. Preprocess the input image.
+3. Generate masked variants of the image (grid, borders, corners, center).
+4. Run inference on each masked image.
+5. Measure the confidence drop compared to the original prediction.
+6. Rank regions by importance.
+
+
+
+In this example:
+
+- **Model:** ResNet18 (ImageNet pretrained)
+- **Original confidence:** 0.8285
+- **Most important region:** `(y:0–74, x:74–148)`
+- **Importance score:** `0.5193`
