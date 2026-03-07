@@ -1,4 +1,5 @@
 import argparse
+from pathlib import Path
 
 import torch
 from PIL import Image
@@ -22,7 +23,14 @@ def run_pipeline(args):
     model, weights = load_model(args.model, pretrained=(not args.no_pretrained), device=device)
     preprocess = get_preprocess(weights)
 
-    pil_image = Image.open(args.image).convert("RGB")
+    image_path = Path(args.image).expanduser()
+    if not image_path.is_file():
+        raise FileNotFoundError(
+            f"Image file not found: '{args.image}'. "
+            "Pass a real path, e.g. --image .\\samples\\cat.jpg"
+        )
+
+    pil_image = Image.open(image_path).convert("RGB")
     image = preprocess(pil_image).to(device)
 
     original_class, original_conf = predict_top1(model, image)
@@ -99,3 +107,4 @@ def build_parser():
 if __name__ == "__main__":
     args = build_parser().parse_args()
     run_pipeline(args)
+
