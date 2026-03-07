@@ -17,7 +17,8 @@ If hiding a region causes a large confidence drop, that region is likely **impor
 5. Measure the confidence drop compared to the original prediction.
 6. Rank regions by importance.
 
-<img width="1394" height="768" alt="best image" src="https://github.com/user-attachments/assets/d7629d19-2bbf-4ec9-815b-9e5b815c5714" />
+<img width="1394" height="768" alt="best of best" src="https://github.com/user-attachments/assets/7260d19d-6fed-47db-b229-61311db14d7e" />
+
 
 In this example:
 
