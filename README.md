@@ -1,7 +1,7 @@
 # XAI-Vision
 Deep Learning models are often "Black Boxes"; we see what they predict, but we don't know *why*. **XAI-Vision** is a diagnostic suite designed to "show" the internal logic of AI.
 
- [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+ [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/) [![PyTorch](https://img.shields.io/badge/PyTorch-2.7.1-EE4C2C?logo=pytorch&logoColor=white)](https://pytorch.org/) [![Torchvision](https://img.shields.io/badge/Torchvision-0.22.1-EE4C2C?logo=pytorch&logoColor=white)](https://pytorch.org/vision/stable/) [![Pillow](https://img.shields.io/badge/Pillow-11.2.1-blue?logo=python-pillow&logoColor=white)](https://python-pillow.org/)
  
 XAI-Vision works by **systematically masking regions of an image** and measuring how the model’s prediction confidence changes.  
 If hiding a region causes a large confidence drop, that region is likely **important for the model's decision**.
