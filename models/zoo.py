@@ -25,9 +25,10 @@ def load_model(name="resnet18", pretrained=True, device="cpu"):
         try:
             model = constructor(weights=default_weights)
             weights_used = default_weights
-        except Exception:
-            model = constructor(weights=None)
-            weights_used = None
+        except Exception as exc:
+            raise RuntimeError(
+                f"Failed to load pretrained weights for '{name}'."
+            ) from exc
     else:
         model = constructor(weights=None)
         weights_used = None
@@ -43,3 +44,10 @@ def get_preprocess(weights):
 
     # Fallback transform compatible with common ImageNet backbones.
     return models.ResNet18_Weights.DEFAULT.transforms()
+
+
+def get_categories(weights):
+    if weights is None:
+        return None
+
+    return weights.meta.get("categories")
