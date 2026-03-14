@@ -2,7 +2,7 @@ import base64
 import io
 
 import torch
-from PIL import Image
+import torchvision.transforms.functional as TF
 
 from models.zoo import get_categories, get_preprocess, load_model
 from modules.masker import ImageMasker
@@ -11,6 +11,8 @@ from modules.visualizer import ImportanceVisualizer
 
 
 _MODEL_CACHE = {}
+_IMAGE_NET_MEAN = (0.485, 0.456, 0.406)
+_IMAGE_NET_STD = (0.229, 0.224, 0.225)
 
 
 def load_model_bundle(model_name, device):
@@ -37,6 +39,32 @@ def pil_image_to_base64(image):
     return base64.b64encode(buffer.getvalue()).decode("utf-8")
 
 
+def tensor_to_display_image(image_tensor):
+    tensor = image_tensor.detach().cpu().clone()
+    mean = torch.tensor(_IMAGE_NET_MEAN).view(3, 1, 1)
+    std = torch.tensor(_IMAGE_NET_STD).view(3, 1, 1)
+    tensor = (tensor * std + mean).clamp(0.0, 1.0)
+    return TF.to_pil_image(tensor)
+
+
+def build_region_payload(scores):
+    payload = []
+    for rank, item in enumerate(scores, start=1):
+        y1, y2, x1, x2 = item["bbox"]
+        payload.append(
+            {
+                "rank": rank,
+                "bbox": {"y1": y1, "y2": y2, "x1": x1, "x2": x2},
+                "importance": item["importance"],
+                "original_confidence": item["original_confidence"],
+                "masked_confidence": item["masked_confidence"],
+                "mask_type": item["mask_type"],
+                "label": item["label"],
+            }
+        )
+    return payload
+
+
 def analyze_image(
     image,
     model_name,
@@ -49,8 +77,8 @@ def analyze_image(
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model, preprocess, categories = load_model_bundle(model_name, device)
 
-    analysis_image = image.convert("RGB").resize((224, 224))
-    image_tensor = preprocess(analysis_image).to(device)
+    image_tensor = preprocess(image.convert("RGB")).to(device)
+    analysis_image = tensor_to_display_image(image_tensor)
 
     original_class, original_conf = predict_top1(model, image_tensor)
 
@@ -66,29 +94,24 @@ def analyze_image(
     ranked_scores = sorted(scores, key=lambda item: item["importance"], reverse=True)
 
     visualizer = ImportanceVisualizer()
-    overlay = visualizer.render_overlay(analysis_image, ranked_scores, topk=topk)
+    heatmap_overlay = visualizer.render_heatmap_overlay(analysis_image, ranked_scores)
+    box_overlay = visualizer.render_box_overlay(analysis_image, ranked_scores, topk=topk)
 
     class_name = str(original_class)
     if categories and 0 <= original_class < len(categories):
         class_name = categories[original_class]
 
-    top_regions = []
-    for rank, item in enumerate(ranked_scores[:topk], start=1):
-        y1, y2, x1, x2 = item["bbox"]
-        top_regions.append(
-            {
-                "rank": rank,
-                "bbox": {"y1": y1, "y2": y2, "x1": x1, "x2": x2},
-                "importance": item["importance"],
-            }
-        )
+    all_regions = build_region_payload(ranked_scores)
+    top_regions = all_regions[:topk]
 
     return {
         "device": device,
         "class_index": original_class,
         "class_name": class_name,
         "confidence": original_conf,
-        "top_regions": top_regions,
-        "overlay_image": pil_image_to_base64(overlay),
         "analysis_image": pil_image_to_base64(analysis_image),
+        "heatmap_overlay_image": pil_image_to_base64(heatmap_overlay),
+        "box_overlay_image": pil_image_to_base64(box_overlay),
+        "top_regions": top_regions,
+        "all_regions": all_regions,
     }

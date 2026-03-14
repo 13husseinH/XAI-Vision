@@ -136,6 +136,10 @@ img {
   margin-bottom: 18px;
 }
 
+.metrics-four {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .metrics > div {
   padding: 14px;
   background: var(--accent-soft);
@@ -186,6 +190,46 @@ figcaption {
   color: var(--muted);
 }
 
+.region-item-rich {
+  align-items: center;
+}
+
+.region-stats {
+  min-width: 140px;
+  text-align: right;
+}
+
+.results-header,
+.regions-toolbar,
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.toggle-row {
+  flex-wrap: wrap;
+}
+
+.toggle {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  padding: 8px 12px;
+}
+
+.toggle.active {
+  background: linear-gradient(135deg, #c84c2a, #8e2d17);
+  color: white;
+  border-color: transparent;
+}
+
+.explain-copy {
+  margin: 0;
+  color: var(--muted);
+}
+
 .error {
   color: #8f1f13;
   font-weight: 700;
@@ -201,7 +245,19 @@ figcaption {
   }
 
   .image-grid,
-  .metrics {
+  .metrics,
+  .metrics-four {
     grid-template-columns: 1fr;
+  }
+
+  .results-header,
+  .regions-toolbar,
+  .region-item,
+  .region-item-rich {
+    display: grid;
+  }
+
+  .region-stats {
+    text-align: left;
   }
 }

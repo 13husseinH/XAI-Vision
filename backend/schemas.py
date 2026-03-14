@@ -12,6 +12,10 @@ class RegionScore(BaseModel):
     rank: int
     bbox: BoundingBox
     importance: float
+    original_confidence: float
+    masked_confidence: float
+    mask_type: str
+    label: str
 
 
 class AnalyzeResponse(BaseModel):
@@ -19,6 +23,8 @@ class AnalyzeResponse(BaseModel):
     class_index: int
     class_name: str
     confidence: float
-    top_regions: list[RegionScore]
     analysis_image: str
-    overlay_image: str
+    heatmap_overlay_image: str
+    box_overlay_image: str
+    top_regions: list[RegionScore]
+    all_regions: list[RegionScore]

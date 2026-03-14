@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const API_BASE = "http://localhost:8000";
 
@@ -15,6 +15,8 @@ function App() {
   const [results, setResults] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [viewMode, setViewMode] = useState("heatmap");
+  const [regionFilter, setRegionFilter] = useState("top");
 
   useEffect(() => {
     fetch(`${API_BASE}/models`)
@@ -40,6 +42,30 @@ function App() {
     setPreviewUrl(objectUrl);
     return () => URL.revokeObjectURL(objectUrl);
   }, [imageFile]);
+
+  const visibleRegions = useMemo(() => {
+    if (!results) {
+      return [];
+    }
+
+    return regionFilter === "all" ? results.all_regions : results.top_regions;
+  }, [regionFilter, results]);
+
+  const resultImage = useMemo(() => {
+    if (!results) {
+      return "";
+    }
+
+    if (viewMode === "boxes") {
+      return results.box_overlay_image;
+    }
+
+    if (viewMode === "original") {
+      return results.analysis_image;
+    }
+
+    return results.heatmap_overlay_image;
+  }, [results, viewMode]);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -73,6 +99,8 @@ function App() {
       }
 
       setResults(data);
+      setViewMode("heatmap");
+      setRegionFilter("top");
     } catch (submitError) {
       setError(submitError.message);
     } finally {
@@ -86,7 +114,7 @@ function App() {
         <p className="eyebrow">XAI-Vision</p>
         <h1>Inspect what a pretrained vision model actually relies on.</h1>
         <p className="hero-copy">
-          Upload an image, choose a backbone, and rank the regions that most reduce the original prediction confidence when masked.
+          Upload an image, choose a backbone, and inspect how region masking changes confidence for the original prediction.
         </p>
       </header>
 
@@ -185,12 +213,22 @@ function App() {
         </section>
 
         <section className="panel results">
-          <h2>Results</h2>
+          <div className="results-header">
+            <h2>Results</h2>
+            {results ? (
+              <div className="toggle-row">
+                <button type="button" className={viewMode === "heatmap" ? "toggle active" : "toggle"} onClick={() => setViewMode("heatmap")}>Heatmap</button>
+                <button type="button" className={viewMode === "boxes" ? "toggle active" : "toggle"} onClick={() => setViewMode("boxes")}>Boxes</button>
+                <button type="button" className={viewMode === "original" ? "toggle active" : "toggle"} onClick={() => setViewMode("original")}>Original</button>
+              </div>
+            ) : null}
+          </div>
+
           {error ? <p className="error">{error}</p> : null}
           {!results ? <p>Run the analysis to see prediction and region importance.</p> : null}
           {results ? (
             <>
-              <div className="metrics">
+              <div className="metrics metrics-four">
                 <div>
                   <span className="metric-label">Prediction</span>
                   <strong>{results.class_name}</strong>
@@ -200,8 +238,12 @@ function App() {
                   <strong>{results.confidence.toFixed(4)}</strong>
                 </div>
                 <div>
-                  <span className="metric-label">Device</span>
-                  <strong>{results.device}</strong>
+                  <span className="metric-label">Top Drop</span>
+                  <strong>{results.top_regions.length ? results.top_regions[0].importance.toFixed(4) : "n/a"}</strong>
+                </div>
+                <div>
+                  <span className="metric-label">Mask Count</span>
+                  <strong>{results.all_regions.length}</strong>
                 </div>
               </div>
 
@@ -211,21 +253,32 @@ function App() {
                   <figcaption>Analyzed View</figcaption>
                 </figure>
                 <figure>
-                  <img src={`data:image/png;base64,${results.overlay_image}`} alt="Importance overlay" />
-                  <figcaption>Importance Overlay</figcaption>
+                  <img src={`data:image/png;base64,${resultImage}`} alt="Importance output" />
+                  <figcaption>{viewMode === "heatmap" ? "Heatmap Overlay" : viewMode === "boxes" ? "Box Overlay" : "Original View"}</figcaption>
                 </figure>
               </div>
 
+              <div className="regions-toolbar">
+                <p className="explain-copy">
+                  Importance is the drop in confidence for the original predicted class after masking that region.
+                </p>
+                <div className="toggle-row">
+                  <button type="button" className={regionFilter === "top" ? "toggle active" : "toggle"} onClick={() => setRegionFilter("top")}>Top only</button>
+                  <button type="button" className={regionFilter === "all" ? "toggle active" : "toggle"} onClick={() => setRegionFilter("all")}>All regions</button>
+                </div>
+              </div>
+
               <div className="region-list">
-                {results.top_regions.map((region) => (
-                  <article key={region.rank} className="region-item">
+                {visibleRegions.map((region) => (
+                  <article key={`${region.rank}-${region.label}`} className="region-item region-item-rich">
                     <div>
-                      <strong>#{region.rank}</strong>
-                      <span>
-                        bbox=(y:{region.bbox.y1}-{region.bbox.y2}, x:{region.bbox.x1}-{region.bbox.x2})
-                      </span>
+                      <strong>#{region.rank} {region.label}</strong>
+                      <span>{region.mask_type} | bbox=(y:{region.bbox.y1}-{region.bbox.y2}, x:{region.bbox.x1}-{region.bbox.x2})</span>
                     </div>
-                    <strong>{region.importance.toFixed(4)}</strong>
+                    <div className="region-stats">
+                      <strong>{region.importance.toFixed(4)}</strong>
+                      <span>{region.original_confidence.toFixed(4)} {"->"} {region.masked_confidence.toFixed(4)}</span>
+                    </div>
                   </article>
                 ))}
               </div>
@@ -238,3 +291,5 @@ function App() {
 }
 
 export default App;
+
+
